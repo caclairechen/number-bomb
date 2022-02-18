@@ -3,7 +3,7 @@
     <v-list-item three-line>
       <v-list-item-content>
         <v-list-item-title class="text-h5 mb-1">
-            1-10
+          {{ min }} - {{ max }}
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
@@ -14,7 +14,7 @@
 export default {
   name: "Range",
 
-  props: [""],
+  props: ["min", "max"],
 
   components: {},
 
