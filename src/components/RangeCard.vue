@@ -1,9 +1,9 @@
 <template>
-  <v-card class="mx-auto" max-width="344" outlined>
+  <v-card class="mx-auto" width="200" outlined>
     <v-list-item three-line>
       <v-list-item-content>
         <v-list-item-title class="text-h5 mb-1">
-          {{ min }} - {{ max }}
+          {{ num }}
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
@@ -12,9 +12,9 @@
 
 <script>
 export default {
-  name: "Range",
+  name: "RangeCard",
 
-  props: ["min", "max"],
+  props: ["num"],
 
   components: {},
 

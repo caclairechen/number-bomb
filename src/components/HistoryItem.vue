@@ -6,7 +6,7 @@
           Number: {{ historyItem.number }}
         </v-list-item-title>
         <v-list-item-subtitle
-          >Range: {{ historyItem.range }}</v-list-item-subtitle
+          >Range: {{ historyItem.min }} - {{historyItem.max}} </v-list-item-subtitle
         >
       </v-list-item-content>
     </v-list-item>
