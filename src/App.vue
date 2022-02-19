@@ -13,8 +13,23 @@
         <v-toolbar-title> NUMBER BOMB </v-toolbar-title>
       </div>
 
-      <v-spacer></v-spacer>
-    </v-app-bar>
+<v-spacer></v-spacer>
+
+       <v-btn
+         href="https://github.com/caclairechen/number-bomb"
+         target="_blank"
+         text
+       >
+         <span class="mr-2">Source</span>
+          <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="./assets/github.png"
+          transition="scale-transition"
+          width="40"
+        />
+       </v-btn>    </v-app-bar>
 
     <v-main>
       <MainPage />
