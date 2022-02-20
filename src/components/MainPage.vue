@@ -5,10 +5,22 @@
         <v-card id="card-1" elevation="4" outlined shaped>
           {{ countDown }}
         </v-card>
-        <v-card id="card-1" elevation="4" outlined shaped v-if="!gameOver">
+        <v-card
+          id="card-1"
+          elevation="4"
+          outlined
+          shaped
+          v-if="!gameOver"
+        >
           Avoid this number!
         </v-card>
-        <v-card id="card-1" elevation="4" outlined shaped v-else>
+        <v-card
+          id="card-1"
+          elevation="4"
+          outlined
+          shaped
+          v-else
+        >
           You lose... The number is {{ this.bomb }}
         </v-card>
       </v-col>
@@ -142,7 +154,7 @@ export default {
 
     generateRandomBomb() {
       this.bomb = Math.round(Math.random() * this.max);
-    }
+    },
   },
 
   created() {
