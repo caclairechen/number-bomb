@@ -62,7 +62,7 @@ export default {
     histories: [],
     min: 0,
     max: 100,
-    bomb: 89,
+    bomb: 0,
     gameOver: false,
     invalidNumber: false,
     countDown: 10,
@@ -139,10 +139,15 @@ export default {
         this.guess += val;
       }
     },
+
+    generateRandomBomb() {
+      this.bomb = Math.round(Math.random() * this.max);
+    }
   },
 
   created() {
     this.countDownTimer();
+    this.generateRandomBomb();
   },
 
   watch: {
