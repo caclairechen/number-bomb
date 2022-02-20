@@ -1,65 +1,51 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
-      <v-col cols="12" height="200">
-        <v-card id="card-1" elevation="4" outlined shaped>
-          {{ countDown }}
-        </v-card>
-        <v-card
-          id="card-1"
-          elevation="4"
-          outlined
-          shaped
-          v-if="!gameOver"
-        >
-          Avoid this number!
-        </v-card>
-        <v-card
-          id="card-1"
-          elevation="4"
-          outlined
-          shaped
-          v-else
-        >
-          You lose... The number is {{ this.bomb }}
-        </v-card>
-      </v-col>
-      <v-card class="d-flex justify-space-around mb-6" flat tile>
-        <RangeCard v-bind:num="min" />
-      </v-card>
-      <v-card class="d-flex justify-space-around mb-6" flat tile width="500">
-        <div class="d-flex flex-column mb-6">
-          <v-card class="d-flex pa-2" outlined tile height="50">
-            {{ this.guess }}
+  <div>
+    <v-container>
+      <v-row class="text-center">
+        <v-col cols="12" height="200">
+          <v-card id="card-1" elevation="4" outlined shaped>
+            {{ countDown }}
           </v-card>
-          <v-card class="d-flex pa-2" outlined tile>
-            <Keyboard v-on:key-click="onKeyClicked" />
-          </v-card>
-          <v-card
-            class="d-flex pa-2"
-            outlined
-            tile
-            v-if="invalidNumber"
-            height="50"
-          >
-            Please enter another number.
-          </v-card>
-        </div>
-      </v-card>
+        </v-col>
+        <v-card class="d-flex justify-space-around mb-6" flat tile>
+          <RangeCard v-bind:num="min" />
+        </v-card>
+        <v-card class="d-flex justify-space-around mb-6" flat tile width="500">
+          <div class="d-flex flex-column mb-6">
+            <v-card class="d-flex pa-2" outlined tile height="50">
+              {{ this.guess }}
+            </v-card>
+            <v-card class="d-flex pa-2" outlined tile>
+              <Keyboard v-on:key-click="onKeyClicked" />
+            </v-card>
+            <v-card
+              class="d-flex pa-2"
+              outlined
+              tile
+              v-if="invalidNumber"
+              height="50"
+            >
+              Please enter another number.
+            </v-card>
+          </div>
+        </v-card>
 
-      <v-card class="d-flex justify-space-around mb-6" flat tile>
-        <RangeCard v-bind:num="max" />
-      </v-card>
+        <v-card class="d-flex justify-space-around mb-6" flat tile>
+          <RangeCard v-bind:num="max" />
+        </v-card>
 
-      <HistoryList v-bind:historyList="histories" />
-    </v-row>
-  </v-container>
+        <HistoryList v-bind:historyList="histories" />
+      </v-row>
+    </v-container>
+    <GameOver v-bind:bomb="bomb" v-bind:open="gameOver" @close="restartGame"/>
+  </div>
 </template>
 
 <script>
 import HistoryList from "./HistoryList.vue";
 import RangeCard from "./RangeCard.vue";
 import Keyboard from "./Keyboard.vue";
+import GameOver from "./GameOver.vue";
 
 export default {
   name: "MainPage",
@@ -68,6 +54,7 @@ export default {
     HistoryList,
     RangeCard,
     Keyboard,
+    GameOver,
   },
 
   data: () => ({
@@ -94,7 +81,7 @@ export default {
     isBomb(number) {
       var numberIsBomb = number == this.bomb;
       if (numberIsBomb) {
-        this.gameOver = true;
+        this.countDown = 1;
       }
       return numberIsBomb;
     },
@@ -107,9 +94,18 @@ export default {
       }
     },
 
-    resetState() {
+    resetRoundState() {
       this.guess = "";
       this.countDown = 10;
+    },
+
+    resetGameState() {
+      this.resetRoundState();
+      this.min = 0;
+      this.max = 100;
+      this.histories = [];
+      this.gameOver = false;
+      this.invalidNumber = false
     },
 
     updateHistoryList(number) {
@@ -129,7 +125,7 @@ export default {
 
       this.updateHistoryList(number);
 
-      this.resetState();
+      this.resetRoundState();
     },
 
     countDownTimer() {
@@ -155,23 +151,22 @@ export default {
     generateRandomBomb() {
       this.bomb = Math.round(Math.random() * this.max);
     },
+
+    restartGame() {
+      this.resetGameState();
+      this.generateRandomBomb();
+      this.countDownTimer();
+    }
   },
 
   created() {
-    this.countDownTimer();
-    this.generateRandomBomb();
+    this.restartGame();
   },
 
   watch: {
     countDown: function (val) {
       if (val == 0) {
         this.gameOver = true;
-      }
-    },
-    gameOver: function (val) {
-      if (val) {
-        this.counDown = 0;
-        this.guess = "";
       }
     },
   },
