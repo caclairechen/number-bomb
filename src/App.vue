@@ -13,15 +13,15 @@
         <v-toolbar-title> NUMBER BOMB </v-toolbar-title>
       </div>
 
-<v-spacer></v-spacer>
+      <v-spacer></v-spacer>
 
-       <v-btn
-         href="https://github.com/caclairechen/number-bomb"
-         target="_blank"
-         text
-       >
-         <span class="mr-2">Source</span>
-          <v-img
+      <v-btn
+        href="https://github.com/caclairechen/number-bomb"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Source</span>
+        <v-img
           alt="Vuetify Logo"
           class="shrink mr-2"
           contain
@@ -29,7 +29,8 @@
           transition="scale-transition"
           width="40"
         />
-       </v-btn>    </v-app-bar>
+      </v-btn>
+    </v-app-bar>
 
     <v-main>
       <MainPage />
@@ -46,9 +47,5 @@ export default {
   components: {
     MainPage,
   },
-
-  data: () => ({
-    //
-  }),
 };
 </script>

@@ -14,13 +14,10 @@ import HistoryItem from "./HistoryItem.vue";
 
 export default {
   name: "HistoryList",
-
   props: ["historyList"],
 
   components: {
     HistoryItem,
   },
-
-  data: () => ({}),
 };
 </script>
