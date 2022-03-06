@@ -17,7 +17,7 @@
       </v-col>
     </div>
     <div v-show="startGame">
-      <Playground ref="playground" />
+      <Playground ref="playground" @quit-game="quitGame" />
     </div>
   </div>
 </template>
@@ -49,6 +49,11 @@ export default {
     startTheGame() {
       this.startGame = true;
       this.$refs.playground.restartGame();
+    },
+
+    quitGame() {
+      this.startGame = false;
+      this.$emit("quit-game");
     },
   },
 

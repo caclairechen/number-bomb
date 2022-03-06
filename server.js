@@ -25,6 +25,10 @@ io.on('connection', (socket) => {
     socket.on("createroom", (data) => {
         rooms[data.roomNum] = createRoom(data.roomCapacity, data.maxNum, data.playerName)
         socket.join(data.roomNum);
+        if (data.roomCapacity == 1) {
+            io.in(data.roomNum).emit('gamestart');
+            io.in(data.roomNum).emit('play', data.playerName);
+        }
     })
     socket.on("checkroom", (data) => {
         socket.join(data.roomNum);
@@ -39,14 +43,17 @@ io.on('connection', (socket) => {
     socket.on("joinroom", (data) => {
         socket.join(data.roomNum);
         var room = rooms[data.roomNum];
-        room.players[room.currentIndex] = data.playerName;
-        room.currentIndex += 1;
-        io.in(data.roomNum).emit('roomjoined', {
-            roomCapacity: room.roomCapacity,
-            maxNum: room.maxNum,
-            bomb: room.bomb,
-            players: room.players
-        });
+        if (!(data.playerName in room.players))
+        {
+            room.players[room.currentIndex] = data.playerName;
+            room.currentIndex += 1;
+            io.in(data.roomNum).emit('roomjoined', {
+                roomCapacity: room.roomCapacity,
+                maxNum: room.maxNum,
+                bomb: room.bomb,
+                players: room.players
+            });
+        }
         if (room.currentIndex == room.roomCapacity) {
             io.in(data.roomNum).emit('gamestart');
             io.in(data.roomNum).emit('play', room.players[0]);
@@ -67,11 +74,20 @@ io.on('connection', (socket) => {
         io.in(data.roomNum).emit('lose', data.playerName);
     })
     socket.on('restart', (roomNum) => {
-        io.in(roomNum).emit('restart');
-        io.in(roomNum).emit('play', room.players[0]);
+        var room = rooms[roomNum];
+        room.currentIndex = (room.currentIndex % room.roomCapacity) + 1;
+        if (room.currentIndex == room.roomCapacity) {
+            io.in(roomNum).emit('restart');
+            io.in(roomNum).emit('play', room.players[0]);
+        }
+    })
+    socket.on('quit', (roomNum) => {
+        io.in(roomNum).emit('quit');
+        delete rooms[roomNum];
+        socket.leave(roomNum);
     })
     socket.on('disconnect', () => {
-        io.emit('restart');
+        // io.emit('quit', socket.id);
     })
 })
 

@@ -73,7 +73,7 @@
       </v-container>
     </div>
     <div v-show="ready">
-      <WaitRoom ref="WaitRoom" />
+      <WaitRoom ref="WaitRoom" @quit-game="quitGame" />
     </div>
   </div>
 </template>
@@ -94,7 +94,6 @@ export default {
       roomCapacity: 1,
       maxNum: 100,
       ready: false,
-      text: "",
       roomNumber: "",
     };
   },
@@ -111,12 +110,12 @@ export default {
 
   methods: {
     readyToJoin() {
+      (this.roomCapacity = 1), (this.maxNum = 100), (this.roomNumber = "");
       this.ready = true;
-      this.$store.commit("setPlayerName", SocketioService.socket.id);
     },
 
     buttonClicked() {
-      this.readyToJoin();
+      this.$store.commit("setPlayerName", SocketioService.socket.id);
       this.$store.commit("setRoomCapacity", this.roomCapacity);
       this.$store.commit("setMaxRange", this.maxNum);
       var roomNum = Math.random().toString(36).substr(2, 4);
@@ -128,11 +127,16 @@ export default {
       );
       this.$store.commit("setRoomNum", roomNum);
       this.$store.commit("setPlayers", [this.$store.state.playerName]);
+      this.readyToJoin();
     },
 
     joinRoom() {
       this.$store.commit("setRoomNum", this.roomNumber);
       SocketioService.checkRoom(this.roomNumber);
+    },
+
+    quitGame() {
+      this.ready = false;
     },
   },
 
@@ -142,8 +146,9 @@ export default {
       this.roomNumber = "";
     });
     SocketioService.socket.on("roomexits", () => {
-      this.readyToJoin();
+      this.$store.commit("setPlayerName", SocketioService.socket.id);
       SocketioService.joinRoom(this.$store.state.roomNum);
+      this.readyToJoin();
     });
   },
 };

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import Keyboard from "./Keyboard.vue"
+import Keyboard from "./Keyboard.vue";
 
 export default {
   name: "NumberInputPanel",

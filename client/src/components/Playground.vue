@@ -39,15 +39,15 @@
       v-bind:open="gameOver && win"
       v-bind:title="'You win!'"
       v-bind:msg="'Congratulations!'"
-      @close="restartGame"
-      @quit="quitGame"
+      @restart-game="restartGame"
+      @quit-game="quitGame"
     />
     <GameResult
       v-bind:open="gameOver && !win"
       v-bind:title="'You lose.'"
       v-bind:msg="'Good luck next time.'"
-      @close="restartGame"
-      @quit="quitGame"
+      @restart-game="restartGame"
+      @quit-game="quitGame"
     />
   </div>
 </template>
@@ -153,7 +153,8 @@ export default {
     },
 
     quitGame() {
-      this.reload();
+      this.resetGameState();
+      this.$emit("quit-game");
     },
 
     loseGame() {

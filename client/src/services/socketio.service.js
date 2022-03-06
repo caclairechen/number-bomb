@@ -53,9 +53,11 @@ class SocketioService {
   }
 
   restartGame(roomNum) {
-    this.socket.emit("restart", {
-      roomNum: roomNum,
-    });
+    this.socket.emit("restart", roomNum);
+  }
+
+  quitGame(roomNum) {
+    this.socket.emit("quit", roomNum);
   }
 }
 
