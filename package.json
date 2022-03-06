@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/caclairechen/number-bomb#readme",
   "dependencies": {
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "vuex": "^4.0.2"
   }
 }

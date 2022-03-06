@@ -40,7 +40,6 @@ import NumberInputPanel from "./NumberInputPanel.vue";
 
 export default {
   name: "Playground",
-  props: ["initMax", "numPlayer"],
 
   components: {
     HistoryList,
@@ -84,7 +83,7 @@ export default {
     resetGameState() {
       this.resetRoundState();
       this.min = 0;
-      this.max = this.initMax;
+      this.max = this.$store.state.maxRange;
       this.histories = [];
       this.gameOver = false;
     },

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Key from "./Key.vue";
+import Key from "./Key.vue"
 
 export default {
   name: "Keyboard",

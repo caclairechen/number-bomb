@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="!gameStarted">
+    <div v-show="!ready">
       <v-container class="grey lighten-5">
         <v-row class="mb-6" no-gutters>
           <v-col cols="4">
@@ -10,7 +10,7 @@
           </v-col>
           <v-col md="4" offset-md="4">
             <v-card class="pa-2" outlined color="transparent">
-              <v-radio-group v-model="numPlayer" row mandatory>
+              <v-radio-group v-model="roomCapacity" row mandatory>
                 <v-radio label="1" value="1"></v-radio>
                 <v-radio label="2" value="2"></v-radio>
                 <v-radio label="3" value="3"></v-radio>
@@ -44,8 +44,14 @@
           <v-col md="6" offset-md="3">
             <v-card class="pa-2" outlined color="transparent">
               <div class="text-center">
-                <v-btn rounded color="primary" dark x-large @click="startGame">
-                  Start Game
+                <v-btn
+                  rounded
+                  color="primary"
+                  dark
+                  x-large
+                  @click="buttonClicked"
+                >
+                  {{ this.buttonTxt }}
                 </v-btn>
               </div>
             </v-card>
@@ -53,48 +59,58 @@
         </v-row>
       </v-container>
     </div>
-    <div v-show="gameStarted">
-      <Playground
-        ref="playground"
-        v-bind:numPlayer="numPlayer"
-        v-bind:initMax="maxNum"
-      />
+    <div v-show="ready">
+      <WaitRoom ref="WaitRoom" />
     </div>
   </div>
 </template>
 
 <script>
-import Playground from "./Playground.vue";
-import io from "socket.io-client";
-const socket = io('http://localhost:3000');
+import WaitRoom from "./WaitRoom.vue";
+// import io from "socket.io-client"
+// const socket = io('http://localhost:3000')
 
 export default {
   name: "MainPage",
 
   components: {
-    Playground,
+    WaitRoom,
   },
 
   data() {
     return {
-      numPlayer: 1,
+      roomCapacity: 1,
       maxNum: 100,
-      gameStarted: false,
+      ready: false,
     };
   },
 
+  computed: {
+    buttonTxt: function () {
+      if (this.roomCapacity == 1) {
+        return "Start Game";
+      } else {
+        return "Create Room";
+      }
+    },
+  },
+
   methods: {
-    startGame() {
-      this.gameStarted = true;
-      this.$refs.playground.restartGame();
+    buttonClicked() {
+      this.$store.commit("setRoomCapacity", this.roomCapacity);
+      this.$store.commit("addNumPlayer");
+      this.$store.commit("setMaxRange", this.maxNum);
+      this.ready = true;
     },
   },
 
   created() {
-    console.log("client: started");
-    socket.on("hello", (msg) => {
-      console.log("client: received msg", msg)
-    })
+    // socket.on("connect", () => {
+    //   console.log("client: connected", )
+    // });
+    // socket.on("hello", (msg) => {
+    //   console.log("client: received msg", msg)
+    // });
   },
 };
 </script>

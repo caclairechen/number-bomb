@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import HistoryItem from "./HistoryItem.vue";
+import HistoryItem from "./HistoryItem.vue"
 
 export default {
   name: "HistoryList",
