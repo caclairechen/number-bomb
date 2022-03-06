@@ -28,7 +28,8 @@
     </v-container>
 
     <HistoryList v-bind:historyList="histories" />
-    <GameOver v-bind:bomb="bomb" v-bind:open="gameOver" @close="restartGame" />
+    <GameOver v-bind:open="gameOver && !win" @close="restartGame" />
+    <Winner v-bind:open="gameOver && win" @close="restartGame" />
   </div>
 </template>
 
@@ -36,7 +37,9 @@
 import HistoryList from "./HistoryList.vue";
 import RangeCard from "./RangeCard.vue";
 import GameOver from "./GameOver.vue";
+import Winner from "./Winner.vue";
 import NumberInputPanel from "./NumberInputPanel.vue";
+import SocketioService from "../services/socketio.service";
 
 export default {
   name: "Playground",
@@ -45,6 +48,7 @@ export default {
     HistoryList,
     RangeCard,
     GameOver,
+    Winner,
     NumberInputPanel,
   },
 
@@ -52,24 +56,23 @@ export default {
     histories: [],
     min: 0,
     max: 100,
-    bomb: 0,
     gameOver: false,
     countDown: 10,
-    turn: true,
-    winner: null,
+    myTurn: false,
+    win: false,
   }),
 
   methods: {
     isBomb(number) {
-      var numberIsBomb = number == this.bomb;
+      var numberIsBomb = number == this.$store.state.bomb;
       if (numberIsBomb) {
         this.countDown = 1;
       }
       return numberIsBomb;
     },
 
-    setNewRange(number) {
-      if (number > this.bomb) {
+    updateRange(number) {
+      if (number > this.$store.state.bomb) {
         this.max = number;
       } else {
         this.min = number;
@@ -78,6 +81,7 @@ export default {
 
     resetRoundState() {
       this.countDown = 10;
+      this.myTurn = false;
     },
 
     resetGameState() {
@@ -86,23 +90,34 @@ export default {
       this.max = this.$store.state.maxRange;
       this.histories = [];
       this.gameOver = false;
+      this.win = false;
     },
 
-    updateHistoryList(number) {
+    updateHistoryList(number, player) {
       this.histories.push({
         number: number,
         min: this.min,
         max: this.max,
+        player: player,
       });
     },
 
     guessNumber(number) {
-      if (this.isBomb(number)) {
+      if (!this.myTurn) {
+        alert("not your turn");
         return;
       }
 
-      this.setNewRange(number);
-      this.updateHistoryList(number);
+      if (this.isBomb(number)) {
+        this.loseGame();
+        return;
+      }
+
+      SocketioService.rotate(
+        number,
+        this.$store.state.playerName,
+        this.$store.state.roomNum
+      );
       this.resetRoundState();
     },
 
@@ -115,23 +130,54 @@ export default {
       }
     },
 
-    generateRandomBomb() {
-      this.bomb = Math.round(Math.random() * this.max);
-    },
-
     restartGame() {
       this.resetGameState();
-      this.generateRandomBomb();
       this.countDownTimer();
+    },
+
+    loseGame() {
+      if (!this.myTurn) {
+        return;
+      }
+      SocketioService.loseGame(
+        this.$store.state.playerName,
+        this.$store.state.roomNum
+      );
+      this.gameOver = true;
+      this.win = false;
+    },
+
+    winGame() {
+      this.gameOver = true;
+      this.win = true;
     },
   },
 
-  created() {},
+  created() {
+    SocketioService.socket.on("restart", () => {
+      this.restartGame();
+    });
+    SocketioService.socket.on("play", (player) => {
+      this.countDown = 10;
+      if (this.$store.state.playerName == player) {
+        this.myTurn = true;
+      }
+    });
+    SocketioService.socket.on("update", (data) => {
+      this.updateRange(data.guess);
+      this.updateHistoryList(data.guess, data.playerName);
+    });
+    SocketioService.socket.on("lose", (player) => {
+      if (this.$store.state.playerName != player) {
+        this.winGame();
+      }
+    });
+  },
 
   watch: {
     countDown: function (val) {
       if (val == 0) {
-        this.gameOver = true;
+        this.loseGame();
       }
     },
   },
