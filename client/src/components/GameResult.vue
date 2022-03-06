@@ -71,7 +71,8 @@ export default {
       this.closeDialog();
       this.$emit("quit-game");
     });
-    SocketioService.socket.on("restart", () => {
+    SocketioService.socket.on("restart", (bomb) => {
+      this.$store.commit("setBomb", bomb);
       this.closeDialog();
       this.$emit("restart-game");
     });

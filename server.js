@@ -20,15 +20,15 @@ function createRoom(roomCapacity, maxNum, playerName){
     return room;
 }
 
-
 io.on('connection', (socket) => {
     socket.on("createroom", (data) => {
         rooms[data.roomNum] = createRoom(data.roomCapacity, data.maxNum, data.playerName)
         socket.join(data.roomNum);
         if (data.roomCapacity == 1) {
-            io.in(data.roomNum).emit('gamestart');
+            io.in(data.roomNum).emit('gamestart', rooms[data.roomNum].bomb);
             io.in(data.roomNum).emit('play', data.playerName);
         }
+        console.log(rooms[data.roomNum].bomb);
     })
     socket.on("checkroom", (data) => {
         socket.join(data.roomNum);
@@ -50,12 +50,11 @@ io.on('connection', (socket) => {
             io.in(data.roomNum).emit('roomjoined', {
                 roomCapacity: room.roomCapacity,
                 maxNum: room.maxNum,
-                bomb: room.bomb,
                 players: room.players
             });
         }
         if (room.currentIndex == room.roomCapacity) {
-            io.in(data.roomNum).emit('gamestart');
+            io.in(data.roomNum).emit('gamestart', room.bomb);
             io.in(data.roomNum).emit('play', room.players[0]);
         }
     })
@@ -77,7 +76,8 @@ io.on('connection', (socket) => {
         var room = rooms[roomNum];
         room.currentIndex = (room.currentIndex % room.roomCapacity) + 1;
         if (room.currentIndex == room.roomCapacity) {
-            io.in(roomNum).emit('restart');
+            room.bomb =  Math.round(Math.random() * room.maxNum),
+            io.in(roomNum).emit('restart', room.bomb);
             io.in(roomNum).emit('play', room.players[0]);
         }
     })

@@ -61,10 +61,10 @@ export default {
     SocketioService.socket.on("roomjoined", (data) => {
       this.$store.commit("setRoomCapacity", data.roomCapacity);
       this.$store.commit("setMaxRange", data.maxNum);
-      this.$store.commit("setBomb", data.bomb);
       this.$store.commit("setPlayers", data.players);
     });
-    SocketioService.socket.on("gamestart", () => {
+    SocketioService.socket.on("gamestart", (bomb) => {
+      this.$store.commit("setBomb", bomb);
       this.startTheGame();
     });
   },
