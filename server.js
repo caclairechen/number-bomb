@@ -22,10 +22,19 @@ function createRoom(roomCapacity, maxNum, playerName){
 
 
 io.on('connection', (socket) => {
-    console.log("server: new user joined " + socket.id);
     socket.on("createroom", (data) => {
         rooms[data.roomNum] = createRoom(data.roomCapacity, data.maxNum, data.playerName)
         socket.join(data.roomNum);
+    })
+    socket.on("checkroom", (data) => {
+        socket.join(data.roomNum);
+        var room = rooms[data.roomNum];
+        if(room == undefined){
+            io.in(data.playerName).emit('noroom');
+        }
+        else{
+            io.in(data.playerName).emit('roomexits');
+        }
     })
     socket.on("joinroom", (data) => {
         socket.join(data.roomNum);

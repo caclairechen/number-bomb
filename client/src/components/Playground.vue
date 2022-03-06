@@ -1,6 +1,13 @@
 <template>
   <div>
     <v-col align="center">
+      <div class="pa-7 d-inline-block">
+        Player: {{ $store.state.playerName }}
+        <br />
+        This is {{ myTurn ? "" : "not" }} your turn.
+      </div>
+    </v-col>
+    <v-col align="center">
       <div class="pa-7 rounded-circle d-inline-block">
         {{ countDown }}
       </div>
@@ -28,16 +35,27 @@
     </v-container>
 
     <HistoryList v-bind:historyList="histories" />
-    <GameOver v-bind:open="gameOver && !win" @close="restartGame" />
-    <Winner v-bind:open="gameOver && win" @close="restartGame" />
+    <GameResult
+      v-bind:open="gameOver && win"
+      v-bind:title="'You win!'"
+      v-bind:msg="'Congratulations!'"
+      @close="restartGame"
+      @quit="quitGame"
+    />
+    <GameResult
+      v-bind:open="gameOver && !win"
+      v-bind:title="'You lose.'"
+      v-bind:msg="'Good luck next time.'"
+      @close="restartGame"
+      @quit="quitGame"
+    />
   </div>
 </template>
 
 <script>
 import HistoryList from "./HistoryList.vue";
 import RangeCard from "./RangeCard.vue";
-import GameOver from "./GameOver.vue";
-import Winner from "./Winner.vue";
+import GameResult from "./GameResult.vue";
 import NumberInputPanel from "./NumberInputPanel.vue";
 import SocketioService from "../services/socketio.service";
 
@@ -47,8 +65,7 @@ export default {
   components: {
     HistoryList,
     RangeCard,
-    GameOver,
-    Winner,
+    GameResult,
     NumberInputPanel,
   },
 
@@ -135,6 +152,10 @@ export default {
       this.countDownTimer();
     },
 
+    quitGame() {
+      this.reload();
+    },
+
     loseGame() {
       if (!this.myTurn) {
         return;
@@ -154,9 +175,6 @@ export default {
   },
 
   created() {
-    SocketioService.socket.on("restart", () => {
-      this.restartGame();
-    });
     SocketioService.socket.on("play", (player) => {
       this.countDown = 10;
       if (this.$store.state.playerName == player) {

@@ -131,12 +131,20 @@ export default {
     },
 
     joinRoom() {
-      this.readyToJoin();
       this.$store.commit("setRoomNum", this.roomNumber);
-      SocketioService.joinRoom(this.$store.state.roomNum);
+      SocketioService.checkRoom(this.roomNumber);
     },
   },
 
-  created() {},
+  created() {
+    SocketioService.socket.on("noroom", () => {
+      alert("Requested room does not exit, try another one!");
+      this.roomNumber = "";
+    });
+    SocketioService.socket.on("roomexits", () => {
+      this.readyToJoin();
+      SocketioService.joinRoom(this.$store.state.roomNum);
+    });
+  },
 };
 </script>

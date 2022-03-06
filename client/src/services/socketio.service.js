@@ -23,6 +23,13 @@ class SocketioService {
     });
   }
 
+  checkRoom(roomNum) {
+    this.socket.emit("checkroom", {
+      roomNum: roomNum,
+      playerName: this.socket.id,
+    });
+  }
+
   joinRoom(roomNum) {
     this.socket.emit("joinroom", {
       roomNum: roomNum,
