@@ -7,12 +7,7 @@
 <script>
 export default {
   name: "Key",
-
   props: ["keyValue"],
-
-  components: {},
-
-  data: () => ({}),
 
   methods: {
     onKeyClicked() {

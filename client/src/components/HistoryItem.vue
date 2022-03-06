@@ -13,11 +13,6 @@
 <script>
 export default {
   name: "HistoryItem",
-
   props: ["historyItem"],
-
-  components: {},
-
-  data: () => ({}),
 };
 </script>
