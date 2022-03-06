@@ -40,12 +40,21 @@
 
 <script>
 import MainPage from "./components/MainPage";
+import SocketioService from "./services/socketio.service";
 
 export default {
   name: "App",
 
   components: {
     MainPage,
+  },
+
+  created() {
+    SocketioService.setupSocketConnection();
+  },
+
+  beforeUnmount() {
+    SocketioService.disconnect();
   },
 };
 </script>

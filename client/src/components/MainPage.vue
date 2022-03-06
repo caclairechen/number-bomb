@@ -56,6 +56,19 @@
               </div>
             </v-card>
           </v-col>
+          <v-col md="6" offset-md="3">
+            <v-card class="pa-2" outlined color="transparent">
+              <v-text-field
+                v-model="roomNumber"
+                label="Room Number"
+              ></v-text-field>
+              <div class="text-center">
+                <v-btn rounded color="primary" dark x-large @click="joinRoom">
+                  Join A Room
+                </v-btn>
+              </div>
+            </v-card>
+          </v-col>
         </v-row>
       </v-container>
     </div>
@@ -67,8 +80,7 @@
 
 <script>
 import WaitRoom from "./WaitRoom.vue";
-// import io from "socket.io-client"
-// const socket = io('http://localhost:3000')
+import SocketioService from "../services/socketio.service";
 
 export default {
   name: "MainPage",
@@ -82,6 +94,8 @@ export default {
       roomCapacity: 1,
       maxNum: 100,
       ready: false,
+      text: "",
+      roomNumber: "",
     };
   },
 
@@ -96,21 +110,33 @@ export default {
   },
 
   methods: {
-    buttonClicked() {
-      this.$store.commit("setRoomCapacity", this.roomCapacity);
-      this.$store.commit("addNumPlayer");
-      this.$store.commit("setMaxRange", this.maxNum);
+    readyToJoin() {
       this.ready = true;
+      this.$store.commit("setPlayerName", SocketioService.socket.id);
+    },
+
+    buttonClicked() {
+      this.readyToJoin();
+      this.$store.commit("setRoomCapacity", this.roomCapacity);
+      this.$store.commit("setMaxRange", this.maxNum);
+      var roomNum = Math.random().toString(36).substr(2, 4);
+      SocketioService.createRoom(
+        roomNum,
+        this.roomCapacity,
+        this.maxNum,
+        this.$store.state.playerName
+      );
+      this.$store.commit("setRoomNum", roomNum);
+      this.$store.commit("setPlayers", [this.$store.state.playerName]);
+    },
+
+    joinRoom() {
+      this.readyToJoin();
+      this.$store.commit("setRoomNum", this.roomNumber);
+      SocketioService.joinRoom(this.$store.state.roomNum);
     },
   },
 
-  created() {
-    // socket.on("connect", () => {
-    //   console.log("client: connected", )
-    // });
-    // socket.on("hello", (msg) => {
-    //   console.log("client: received msg", msg)
-    // });
-  },
+  created() {},
 };
 </script>
