@@ -75,11 +75,14 @@
     <div v-show="ready">
       <WaitRoom ref="WaitRoom" @quit-game="quitGame" />
     </div>
+    <CreateUser/>
   </div>
 </template>
 
 <script>
 import WaitRoom from "./WaitRoom.vue";
+//test for backend
+import CreateUser from "./CreateUser.vue";
 import SocketioService from "../services/socketio.service";
 
 export default {
@@ -87,6 +90,7 @@ export default {
 
   components: {
     WaitRoom,
+    CreateUser,
   },
 
   data() {
